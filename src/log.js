@@ -1,4 +1,5 @@
 const fs = require('node:fs')
+const path = require('node:path')
 
 const tzOffset = (new Date()).getTimezoneOffset() * 60000
 
@@ -82,11 +83,52 @@ function writeToStdout(message) {
     console.log(message)
 }
 
-function writeToFile(message, path) {
-    fs.appendFileSync(path, stripAnsiCodes(message) + '\n', "utf8")
+function writeToFile(message, filePath) {
+    fs.appendFileSync(filePath, stripAnsiCodes(message) + '\n', "utf8")
 }
 
-function logFactory({ id, path, colors, toStdout = true }) {
+function formatDate(date, format) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+    
+    const replacements = {
+        'YYYY': year,
+        'YY': String(year).slice(-2),
+        'MM': month,
+        'DD': day,
+        'HH': hours,
+        'mm': minutes,
+        'ss': seconds,
+        'M': String(date.getMonth() + 1),
+        'D': String(date.getDate()),
+        'H': String(date.getHours()),
+        'm': String(date.getMinutes()),
+        's': String(date.getSeconds())
+    }
+    
+    let formatted = format
+    for (const [token, value] of Object.entries(replacements)) {
+        formatted = formatted.replace(new RegExp(token, 'g'), value)
+    }
+    
+    return formatted
+}
+
+function getDayBasedFilePath(originalPath, dateFormat) {
+    const now = new Date()
+    const datePrefix = formatDate(now, dateFormat) + '-'
+    
+    const dir = path.dirname(originalPath)
+    const basename = path.basename(originalPath)
+    
+    return path.join(dir, datePrefix + basename)
+}
+
+function logFactory({ id, path: logPath, colors, toStdout = true, dayBasedFileLog = false, dateFormat = 'YYYYMMDD' }) {
     let currentId = id
 
     const createLogHandler = (colors, level) => (...args) => {
@@ -99,8 +141,9 @@ function logFactory({ id, path, colors, toStdout = true }) {
         if (toStdout !== false) {
             writeToStdout(message)
         }
-        if (path) {
-            writeToFile(message, path)
+        if (logPath) {
+            const filePath = dayBasedFileLog ? getDayBasedFilePath(logPath, dateFormat) : logPath
+            writeToFile(message, filePath)
         }
     }
 

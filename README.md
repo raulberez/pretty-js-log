@@ -75,6 +75,35 @@ const data = {
 logger('User data:', data);  // Objects are automatically formatted
 ```
 
+### Day-Based File Logging
+
+Automatically prefix your log files with dates to organize them by day:
+
+```javascript
+// Using default date format (YYYYMMDD)
+const logger = logFactory({
+    path: './logs/app.log',
+    dayBasedFileLog: true
+});
+// Creates: ./logs/20251020-app.log
+
+// With custom date format
+const logger2 = logFactory({
+    path: './logs/app.log',
+    dayBasedFileLog: true,
+    dateFormat: 'YYYY-MM-DD'
+});
+// Creates: ./logs/2025-10-20-app.log
+
+// Hourly log files
+const logger3 = logFactory({
+    path: './logs/app.log',
+    dayBasedFileLog: true,
+    dateFormat: 'YYYYMMDD-HH'
+});
+// Creates: ./logs/20251020-14-app.log (for 2 PM)
+```
+
 ### Disable Console Output
 
 If you want to write logs only to file without console output, use the `toStdout` option:
