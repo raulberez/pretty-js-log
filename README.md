@@ -111,52 +111,8 @@ If you want to write logs only to file without console output, use the `toStdout
 ```javascript
 const logger = logFactory({
     path: './logs/app.log',
-    toStdout: false    // Logs will only be written to file
+    toStdout: false    // Disables console output, logs go to file only
 });
-
-logger('This will only appear in the log file');
-logger.info('Silent logging to file');
-````
-
-### Update Logger ID
-You can dynamically update the logger ID after creation using the `id` method:
-
-```javascript
-const logger = logFactory({
-    id: 'initial-id'
-});
-
-logger('First log with initial ID');
-
-logger.id('new-id');
-logger('This log will show the new ID');
 ```
 
-## Output Examples 🎨
-
-When you run your logs, they'll look something like this in the console:
-
-```
-[2024-03-15 10:30:45] - [id:1234] - Hello World
-[2024-03-15 10:30:46] - [id:1234] - This is an info message
-[2024-03-15 10:30:47] - [id:1234] - Warning! Something needs attention
-```
-
-## Contributing 🤝
-
-Feel free to open issues and submit PRs! This is an open-source project and we welcome contributions.
-
-## License 📄
-
-MIT License - feel free to use this in your projects!
-
-## Todo 📋
-
-- [ ] File logging rotation based on file size or on dates.
-- [ ] Add support for external logging API's endpoints.
-
-## Author 👨‍💻
-
-Belguinan Noureddine
-
-GitHub: https://github.com/belguinan
+> **Note:** This is useful in production environments where you don't want to flood stdout but still need a persistent log file.
